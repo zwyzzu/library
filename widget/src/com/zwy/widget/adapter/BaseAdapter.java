@@ -145,11 +145,10 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 	}
 
 	private void setItems(List<T> list) {
+		if (this.mItems == list)
+			return;
 		this.mItems.clear();
-
-		if (this.mItems != list){
-			this.mItems.addAll(list);
-		}
+		this.mItems.addAll(list);
 	}
 
 	private boolean addItem(T t, int position) {
