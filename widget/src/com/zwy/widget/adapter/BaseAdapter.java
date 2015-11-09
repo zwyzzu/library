@@ -38,6 +38,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 	protected List<T> mItems = new ArrayList<T>();
 
 	public BaseAdapter(List<T> items, OnItemLoading<T> itemLoading) {
+		super();
 		this.setItems(items);
 		this.mItemLoading = itemLoading;
 	}
@@ -148,7 +149,9 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 		if (this.mItems == list)
 			return;
 		this.mItems.clear();
-		this.mItems.addAll(list);
+		if (Utils.isEmpty(list)) {
+			this.mItems.addAll(list);
+		}
 	}
 
 	private boolean addItem(T t, int position) {
@@ -160,6 +163,8 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 	}
 
 	private boolean addItems(List<T> items, int position) {
+		if (Utils.isEmpty(items))
+			return false;
 		if (addlast(position))
 			return this.mItems.addAll(items);
 
