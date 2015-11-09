@@ -1,5 +1,4 @@
 <resources>
 
-    <string name="app_name">widget</string>
-
+    <string name="desc">widget</string>
 </resources>
