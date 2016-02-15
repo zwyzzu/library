@@ -149,7 +149,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 		if (this.mItems == list)
 			return;
 		this.mItems.clear();
-		if (Utils.isEmpty(list)) {
+		if (!Utils.isEmpty(list)) {
 			this.mItems.addAll(list);
 		}
 	}
