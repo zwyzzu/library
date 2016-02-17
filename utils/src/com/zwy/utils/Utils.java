@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -276,5 +278,15 @@ public class Utils {
 			return num - 1;
 		}
 		return num;
+	}
+
+	public static String getProcessName(Context ctx) {
+		int pid = android.os.Process.myPid();
+		ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+		for (ActivityManager.RunningAppProcessInfo process : manager.getRunningAppProcesses()) {
+			if (process.pid == pid)
+				return process.processName;
+		}
+		return "unknown";
 	}
 }
