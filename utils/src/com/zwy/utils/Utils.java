@@ -289,4 +289,10 @@ public class Utils {
 		}
 		return "unknown";
 	}
+
+	public static String makeCycleMsg(Object obj, String cycle) {
+		if (obj == null)
+			return cycle;
+		return (new StringBuffer()).append(obj.getClass().getSimpleName()).append('|').append(cycle).append('|').append(obj.hashCode()).toString();
+	}
 }
