@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.zwy.utils.Utils;
+import com.zwy.widget.RefreshAdapterCallBack;
 
 import android.database.DataSetObserver;
 import android.view.View;
@@ -31,16 +32,15 @@ import android.view.ViewGroup;
  * 修改时间：2014年6月19日 下午3:11:17
  * Description: 适配器基类
  **/
-public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDataOperate<T>{
+public class BaseAdapter<T> extends android.widget.BaseAdapter implements RefreshAdapterCallBack<T> {
 
 	private final int ADD_END = -1;
-	private OnItemLoading<T> mItemLoading = null;
-	protected List<T> mItems = new ArrayList<T>();
+	private OnItemLoading<T> mLoadingItemView = null;
+	protected List<T> mItems = new ArrayList<>();
 
-	public BaseAdapter(List<T> items, OnItemLoading<T> itemLoading) {
-		super();
+	public BaseAdapter(List<T> items, OnItemLoading<T> loadingView) {
 		this.setItems(items);
-		this.mItemLoading = itemLoading;
+		this.mLoadingItemView = loadingView;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 	}
 
 	@Override
-	public void removeAll(List<T> list) {
+	public void remove(List<T> list) {
 		if (Utils.isEmpty(list))
 			return;
 		this.mItems.removeAll(list);
@@ -142,20 +142,18 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 
 	@Override
 	public final View getView(int position, View convertView, ViewGroup parent) {
-		return this.mItemLoading.getView(convertView, getItem(position));
+		return this.mLoadingItemView.getView(convertView, getItem(position));
 	}
 
 	private void setItems(List<T> list) {
 		if (this.mItems == list)
 			return;
 		this.mItems.clear();
-		if (!Utils.isEmpty(list)) {
-			this.mItems.addAll(list);
-		}
+		this.mItems.addAll(list);
 	}
 
-	private boolean addItem(T t, int position) {
-		if (addlast(position))
+	public boolean addItem(T t, int position) {
+		if (addLast(position))
 			return mItems.add(t);
 
 		mItems.add(position, t);
@@ -163,15 +161,13 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 	}
 
 	private boolean addItems(List<T> items, int position) {
-		if (Utils.isEmpty(items))
-			return false;
-		if (addlast(position))
+		if (addLast(position))
 			return this.mItems.addAll(items);
 
 		return this.mItems.addAll(position, items);
 	}
 
-	private boolean addlast(int position) {
+	private boolean addLast(int position) {
 		return position == ADD_END || position < 0 || position >= getCount();
 	}
 
@@ -191,7 +187,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements ListDa
 		}
 	}
 
-	public static interface OnItemLoading<T> {
-		public View getView(View convertView, T item);
+	public interface OnItemLoading<T> {
+		View getView(View convertView, T item);
 	}
 }

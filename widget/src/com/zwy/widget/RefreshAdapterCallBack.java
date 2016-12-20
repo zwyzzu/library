@@ -1,4 +1,4 @@
-package com.zwy.widget.recycler;
+package com.zwy.widget;
 
 import java.util.List;
 

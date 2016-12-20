@@ -9,6 +9,8 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import com.zwy.widget.RefreshAdapterCallBack;
+
 import java.util.List;
 
 /**

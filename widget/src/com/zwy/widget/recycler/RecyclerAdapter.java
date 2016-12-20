@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zwy.utils.Utils;
+import com.zwy.widget.RefreshAdapterCallBack;
 
 import java.util.ArrayList;
 import java.util.List;
