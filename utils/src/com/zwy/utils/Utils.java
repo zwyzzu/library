@@ -228,16 +228,16 @@ public class Utils {
 		return array == null || array.size() <= 0;
 	}
 
-	public static boolean isEmpty(Object[] obj) {
-		return obj == null || obj.length <= 0;
-	}
-
 	public static boolean isEmpty(HashSet<?> set) {
 		return set == null || set.size() <= 0;
 	}
 
 	public static <K, V> boolean isEmpty(Map<K, V> map) {
 		return map == null || map.size() <= 0;
+	}
+
+	public static boolean isEmpty(Object... obj){
+		return obj == null || obj.length <= 0;
 	}
 
 	public static void releaseView(View view) {

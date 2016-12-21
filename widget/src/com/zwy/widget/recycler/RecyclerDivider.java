@@ -10,12 +10,22 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.zwy.utils.Utils;
+
 /**
  * Created by 张维亚(zhangwy) on 2016/12/15 上午9:39.
  * Updated by zhangwy on 2016/12/15 上午9:39.
  * Description
  */
 public class RecyclerDivider extends RecyclerView.ItemDecoration {
+
+    public static RecyclerDivider create(Context ctx, int orientation, int... color){
+        RecyclerDivider divider = new RecyclerDivider(ctx, orientation);
+        if (Utils.isEmpty(color)){
+            divider.setColor(color[0]);
+        }
+        return divider;
+    }
     /**
      * RecyclerView的布局方向，默认先赋值为纵向布局
      * 横向和纵向对应的分割想画法不一样
