@@ -62,7 +62,8 @@ public class RecyclerDivider extends RecyclerView.ItemDecoration {
      * @param color The new color (including alpha) to set in the paint.
      */
     public void setColor(int color){
-        mPaint.setColor(color);
+        mPaint.setColor(Color.alpha(color));
+        mPaint.setStyle(Paint.Style.FILL);
     }
 
     @Override
