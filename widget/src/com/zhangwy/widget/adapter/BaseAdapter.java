@@ -14,13 +14,13 @@
  * 这是北京风行在线技术有限公司未公开的私有源代码。本文件及相关内容未经风行在线技术有
  * 限公司事先书面同意，不允许向任何第三方透露，泄密部分或全部; 也不允许任何形式的私自备份。
  ***************************************************************************************/
-package com.zwy.widget.adapter;
+package com.zhangwy.widget.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zwy.utils.Utils;
-import com.zwy.widget.RefreshAdapterCallBack;
+import com.zhangwy.utils.Utils;
+import com.zhangwy.widget.RefreshAdapterCallBack;
 
 import android.database.DataSetObserver;
 import android.view.View;

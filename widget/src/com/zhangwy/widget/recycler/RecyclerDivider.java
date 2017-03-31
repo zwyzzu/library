@@ -1,4 +1,4 @@
-package com.zwy.widget.recycler;
+package com.zhangwy.widget.recycler;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.zwy.utils.Utils;
+import com.zhangwy.utils.Utils;
 
 /**
  * Created by 张维亚(zhangwy) on 2016/12/15 上午9:39.

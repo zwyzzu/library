@@ -1,11 +1,11 @@
-package com.zwy.widget.recycler;
+package com.zhangwy.widget.recycler;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zwy.utils.Utils;
-import com.zwy.widget.RefreshAdapterCallBack;
+import com.zhangwy.utils.Utils;
+import com.zhangwy.widget.RefreshAdapterCallBack;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.zwy.widget.recycler;
+package com.zhangwy.widget.recycler;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;

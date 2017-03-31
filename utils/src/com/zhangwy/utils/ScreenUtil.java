@@ -15,7 +15,7 @@
  * 限公司事先书面同意，不允许向任何第三方透露，泄密部分或全部; 也不允许任何形式的私自备份。
  ***************************************************************************************/
 
-package com.zwy.utils;
+package com.zhangwy.utils;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

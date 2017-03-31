@@ -1,4 +1,4 @@
-package com.zwy.widget.recycler;
+package com.zhangwy.widget.recycler;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -9,7 +9,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.zwy.widget.RefreshAdapterCallBack;
+import com.zhangwy.widget.RefreshAdapterCallBack;
 
 import java.util.List;
 
