@@ -10,10 +10,8 @@ import java.util.Map;
  * class for packaging the request parameters.
  */
 public class HttpParams {
-    //the default url encoding character
-    private final String DEFAULT_ENC = "UTF-8";
     //array list for holding the @Param objects
-    private List<Param> params = new ArrayList<Param>();
+    private List<Param> params = new ArrayList<>();
 
     public static HttpParams newParams() {
         return new HttpParams();
@@ -40,8 +38,7 @@ public class HttpParams {
     /**
      * put a string <key, value> pair value to the request parameters
      *
-     * @param key:   parameter key
-     * @param value: parameter value
+     * @param params:   parameters
      * @return current @RequestParams object
      */
     public HttpParams put(Map<String, String> params) {
@@ -121,21 +118,35 @@ public class HttpParams {
     /**
      * encode all the parameters to an request string like: key1=value1&key2=value2&...
      * @return encoded url
-     * @throws HttpException
+     * @throws HttpException 异常
      */
     public String encode() throws HttpException {
+        return encode("&", "=");
+    }
+
+    /**
+     * encode all the parameters to an request string like: key1=value1&key2=value2&...
+     * @param connector 连接符
+     * @param assignment 赋值符
+     * @return encoded url
+     * @throws HttpException 异常
+     */
+    public String encode(String connector, String assignment) throws HttpException {
+        final String DEFAULT_ENC = "UTF-8";
         try {
-            StringBuffer sb = new StringBuffer();
-            Iterator<Param> iter = params.iterator();
-            while (iter.hasNext()) {
-                Param param = iter.next();
-                sb.append(URLEncoder.encode(param.getKey(), DEFAULT_ENC));
-                sb.append("=");
-                sb.append(URLEncoder.encode(param.getValue(), DEFAULT_ENC));
-                if (iter.hasNext())
-                    sb.append("&");
+            connector = connector == null ? "" : connector;
+            assignment = assignment == null ? "" : assignment;
+            StringBuffer buffer = new StringBuffer();
+            Iterator<Param> iterator = params.iterator();
+            while (iterator.hasNext()) {
+                Param param = iterator.next();
+                buffer.append(URLEncoder.encode(param.getKey(), DEFAULT_ENC));
+                buffer.append(assignment);
+                buffer.append(URLEncoder.encode(param.getValue(), DEFAULT_ENC));
+                if (iterator.hasNext())
+                    buffer.append(connector);
             }
-            return sb.toString();
+            return buffer.toString();
         } catch (Exception e) {
             throw new HttpException(e.getMessage());
         }

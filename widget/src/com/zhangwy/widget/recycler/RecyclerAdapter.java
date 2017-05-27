@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zhangwy.utils.Utils;
+import com.zhangwy.util.Util;
 import com.zhangwy.widget.RefreshAdapterCallBack;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
 
     @Override
     public void addCurrents(List<Current<T>> list) {
-        if (Utils.isEmpty(list))
+        if (Util.isEmpty(list))
             return;
 
         for (Current<T> item : list)
@@ -78,7 +78,7 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
 
     @Override
     public void remove(List<T> list) {
-        if (Utils.isEmpty(list))
+        if (Util.isEmpty(list))
             return;
         this.array.removeAll(list);
         this.notifyDataSetChanged();
@@ -92,7 +92,7 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
 
     @Override
     public void replaceCurrents(List<Current<T>> list) {
-        if (Utils.isEmpty(list))
+        if (Util.isEmpty(list))
             return;
 
         for (Current<T> item : list)
@@ -117,6 +117,8 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
         if (this.array == list)
             return;
         this.array.clear();
+        if (Util.isEmpty(list))
+            return;
         this.array.addAll(list);
     }
 
@@ -129,6 +131,8 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
     }
 
     private boolean addItems(List<T> items, int position) {
+        if (Util.isEmpty(items))
+            return false;
         if (addLast(position))
             return this.array.addAll(items);
 
@@ -170,7 +174,7 @@ public class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerAdapter.Rec
     }
 
     public T getItem(int position) {
-        if (Utils.isEmpty(array) || position > array.size() - 1) {
+        if (Util.isEmpty(array) || position > array.size() - 1) {
             return null;
         }
         return array.get(position);

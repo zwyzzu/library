@@ -4,6 +4,7 @@ package com.zhangwy.http;
  * recall handler for http request after the request has executed
  */
 public abstract class HttpHandler {
+	protected final String TAG = this.getClass().getSimpleName();
 	//object for recall
 	protected Object obj = null;
 
@@ -21,6 +22,15 @@ public abstract class HttpHandler {
 	 */
 	public void onStart(HttpRequest req){
 	}
+
+	/**
+	 * notify the invoker that send request now
+	 *
+	 * @param req: the http request
+	 */
+	public void onStop(HttpRequest req) {
+	}
+
 	/**
 	 * notify the invoker that the request has success, which means the
 	 * http response code is 200 OK

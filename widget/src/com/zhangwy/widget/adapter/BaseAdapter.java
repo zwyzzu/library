@@ -19,7 +19,7 @@ package com.zhangwy.widget.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.zhangwy.utils.Utils;
+import com.zhangwy.util.Util;
 import com.zhangwy.widget.RefreshAdapterCallBack;
 
 import android.database.DataSetObserver;
@@ -67,7 +67,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements Refres
 
 	@Override
 	public void addCurrents(List<Current<T>> list) {
-		if (Utils.isEmpty(list))
+		if (Util.isEmpty(list))
 			return;
 
 		for (Current<T> item : list)
@@ -90,7 +90,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements Refres
 
 	@Override
 	public void remove(List<T> list) {
-		if (Utils.isEmpty(list))
+		if (Util.isEmpty(list))
 			return;
 		this.mItems.removeAll(list);
 		this.notifyDataSetChanged();
@@ -104,7 +104,7 @@ public class BaseAdapter<T> extends android.widget.BaseAdapter implements Refres
 
 	@Override
 	public void replaceCurrents(List<Current<T>> list) {
-		if (Utils.isEmpty(list))
+		if (Util.isEmpty(list))
 			return;
 
 		for (Current<T> item : list)

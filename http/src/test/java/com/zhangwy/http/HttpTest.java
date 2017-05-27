@@ -1,6 +1,6 @@
 package com.zhangwy.http;
 
-import com.zhangwy.utils.Logger;
+import com.zhangwy.util.Logger;
 
 import org.junit.After;
 import org.junit.Before;

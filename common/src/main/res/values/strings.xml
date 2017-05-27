@@ -1,0 +1,5 @@
+<resources>
+    <string name="common_ok">确定</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_close">关闭</string>
+</resources>

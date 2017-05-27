@@ -1,12 +1,13 @@
 package com.zhangwy.http;
 
+import com.zhangwy.cipher.MD5;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -14,111 +15,186 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 public class HttpFileGetTask extends HttpTask {
+    private boolean block = false;
     private boolean append = false;
-    private long appendPos = -1;
+    private long appendPos = 0;
+    private final long BLOCK_SIZE_MB = 1048576;//1Mb
+    private long blockSize = BLOCK_SIZE_MB;//
+    private DownloadHandler downloadHandler;
 
+    /**
+     * 构造函数下载文件
+     *
+     * @param remoteFile    远程URL
+     * @param localDir      本地文件目录
+     * @param maxRetryCount 最大尝试次数
+     * @param handler       回调
+     * @throws HttpException 异常
+     */
     public HttpFileGetTask(String remoteFile, String localDir, int maxRetryCount, HttpHandler handler) throws HttpException {
         super(remoteFile, localDir, maxRetryCount, handler);
+        this.setDownloadHandler(handler);
     }
 
+    /**
+     * 构造函数具有断点续传功能
+     *
+     * @param remoteFile    远程URL
+     * @param localDir      本地文件目录
+     * @param fileName      本地文件名
+     * @param append        true 断点续传
+     * @param maxRetryCount 最大尝试次数
+     * @param handler       回调
+     * @throws HttpException 异常
+     */
     public HttpFileGetTask(String remoteFile, String localDir, String fileName, boolean append, int maxRetryCount, HttpHandler handler) throws HttpException {
         super(remoteFile, localDir, fileName, maxRetryCount, handler);
         this.append = append;
-        if (this.append) {
-            File f = new File(super.request.getLocalFile());
-            if (f.exists() && f.isFile()) {
-                this.appendPos = f.length();
+        this.setDownloadHandler(handler);
+    }
+
+    /**
+     * 构造函数具有分块功能和断点续传功能
+     *
+     * @param remoteFile    远程URL
+     * @param localDir      本地文件目录
+     * @param fileName      本地文件名
+     * @param append        true 断点续传
+     * @param block         true 分块下载
+     * @param blockSizeMb   分块下载的块大小单位位Mb
+     * @param maxRetryCount 最大尝试次数
+     * @param handler       回调
+     * @throws HttpException 异常
+     */
+    public HttpFileGetTask(String remoteFile, String localDir, String fileName, boolean append, boolean block, float blockSizeMb, int maxRetryCount, HttpHandler handler) throws HttpException {
+        this(remoteFile, localDir, fileName, append, maxRetryCount, handler);
+        this.block = block;
+        if (this.block) {
+            if (blockSizeMb <= 0) {
+                this.block = false;
+                return;
             }
+            this.blockSize = (long) (BLOCK_SIZE_MB * blockSizeMb);
         }
     }
 
+    private void setDownloadHandler(HttpHandler handler) {
+        if (handler != null && handler instanceof DownloadHandler)
+            this.downloadHandler = (DownloadHandler) handler;
+    }
+
     protected void request() throws HttpException {
-        //the response content reading input stream
+        if (isStop())
+            return;
+        // the response content reading input stream
         InputStream in = null;
-        //the file output stream
+        // the file output stream
         FileOutputStream fos = null;
-
-        try {
-            //record the request start time point
-            long startTime = System.currentTimeMillis();
-
-            //prepare the url connection
-            URL url = new URL(request.getUrlString());
-
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setInstanceFollowRedirects(true);
-            conn.setConnectTimeout(CONNECT_TIMEOUT);
-            conn.setReadTimeout(READ_TIMEOUT);
-            if (getUserAgent() != null) {
-                conn.setRequestProperty("User-agent", getUserAgent());
-            }
-
-            conn.setRequestProperty("Accept-Encoding", "gzip,deflate");
-            conn.setRequestProperty("Connection", "Close");
-
-            if (this.append && this.appendPos > 0) {
-                conn.setRequestProperty("Range", "bytes=" + this.appendPos + "-");
-            }
-
-            //get the response code and message
-            int code = conn.getResponseCode();
-            String msg = conn.getResponseMessage();
-            String encoding = conn.getContentEncoding();
-            Map<String, List<String>> headers = conn.getHeaderFields();
-
-            if (code >= 200 && code < 300) {
-                //check the response partial content
-                if (this.append && code != 206) {
-                    this.append = false;
-                }
-
-
-                //get the file name of the request file
-                String fileName = super.request.getFileName();
-                if (fileName == null) {
-                    fileName = getFileNameFromCD(conn.getHeaderField("Content-Disposition"));
-                    if (fileName == null) {
-                        fileName = getFileNameFromPath(super.request.getPath());
-                        if (fileName == null) {
-                            fileName = getUrlMD5(super.request.getUrlString());
-                        }
+        {
+            if (this.append) {
+                File file = new File(super.request.getLocalFile());
+                if (file.exists() && file.isFile()) {
+                    this.appendPos = file.length();
+                    if (this.appendPos <= 0) {
+                        this.append = false;
                     }
                 }
-
-                //read the response content
-                if (encoding != null && encoding.toLowerCase().matches("gzip")) {
-                    in = new GZIPInputStream(new BufferedInputStream(conn.getInputStream()));
-                } else {
-                    in = new BufferedInputStream(conn.getInputStream());
-                }
-
-                //output local file path
-                String filePath = super.request.getLocalDir() + File.separator + fileName;
-
-                //open the out put file stream
-                fos = new FileOutputStream(filePath, this.append);
-
-                //for read response content from remote host
-                byte[] buf = new byte[SIZE_READ_BUFFER];
-
-                //read the response content
-                int sz = in.read(buf);
-                while (sz != -1) {
-                    fos.write(buf, 0, sz);
-                    sz = in.read(buf);
-                }
-
-                //record the request end time point
-                long endTime = System.currentTimeMillis();
-
-                //make the response object
-                this.response = new HttpResponse(code, msg, headers, filePath, endTime - startTime);
-            } else {
-                //record the request end time point
-                long endTime = System.currentTimeMillis();
-                this.response = new HttpResponse(code, msg, headers, "", endTime - startTime);
             }
+        }
+
+        try {
+            // record the request start time point
+            long startTime = System.currentTimeMillis();
+
+            // prepare the url connection
+            URL url = new URL(request.getUrlString());
+            do {
+                if (this.isStop()) {
+                    return;
+                }
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setInstanceFollowRedirects(true);
+                conn.setConnectTimeout(CONNECT_TIMEOUT);
+                conn.setReadTimeout(READ_TIMEOUT);
+                if (getUserAgent() != null) {
+                    conn.setRequestProperty("User-agent", getUserAgent());
+                }
+
+                conn.setRequestProperty("Accept-Encoding", "gzip,deflate");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+
+                if ((this.append && this.appendPos > 0) || (this.block && this.blockSize > 0)) {
+                    StringBuilder range = new StringBuilder("bytes=").append(this.appendPos).append("-");
+                    if (this.block && this.blockSize > 0)
+                        range.append(this.appendPos + blockSize - 1);
+                    conn.setRequestProperty("Range", range.toString());
+                }
+
+                // get the response code and message
+                int code = conn.getResponseCode();
+                String msg = conn.getResponseMessage();
+                Map<String, List<String>> headers = conn.getHeaderFields();
+
+                if (code >= 200 && code < 300) {
+                    // check the response partial content
+                    if (this.append && code != HttpURLConnection.HTTP_PARTIAL) {
+                        this.append = false;
+                    }
+
+                    String encoding = conn.getContentEncoding();
+                    // read the response content
+                    if (encoding != null && encoding.toLowerCase().matches("gzip")) {
+                        in = new GZIPInputStream(new BufferedInputStream(conn.getInputStream()));
+                    } else {
+                        in = new BufferedInputStream(conn.getInputStream());
+                    }
+
+                    // get the file name of the request file
+                    // output local file path
+                    String filePath = super.request.getLocalDir() + File.separator + fileName();
+
+                    // open the out put file stream
+                    if (fos == null)
+                        fos = new FileOutputStream(filePath, this.append);
+
+                    // for read response content from remote host
+                    byte[] buf = new byte[SIZE_READ_BUFFER];
+
+                    long length = 0;
+                    // read the response content
+                    int sz;
+                    while ((sz = in.read(buf)) != -1) {
+                        length += sz;
+                        fos.write(buf, 0, sz);
+                        if (downloadHandler != null) {
+                            downloadHandler.onProgressChanged(this.request, this.appendPos + length);
+                        }
+                    }
+
+                    if (this.isStop()) {
+                        return;
+                    }
+
+                    if (this.block && length == blockSize) {
+                        this.appendPos += blockSize;
+                        continue;
+                    }
+
+                    // record the request end time point
+                    long endTime = System.currentTimeMillis();
+
+                    code = (code == HttpURLConnection.HTTP_PARTIAL) ? HttpURLConnection.HTTP_OK : code;
+                    // make the response object
+                    this.response = new HttpResponse(code, msg, headers, filePath, endTime - startTime);
+                    break;
+                } else {
+                    // record the request end time point
+                    long endTime = System.currentTimeMillis();
+                    this.response = new HttpResponse(code, msg, headers, "", endTime - startTime);
+                    break;
+                }
+            } while (block);
 
         } catch (Exception e) {
             throw new HttpException(e.getMessage());
@@ -132,12 +208,26 @@ public class HttpFileGetTask extends HttpTask {
                     fos.close();
                 }
 
-                //close the connection
+                // close the connection
                 conn.disconnect();
             } catch (Exception e) {
                 System.out.println(e.getLocalizedMessage());
             }
         }
+    }
+
+    private String fileName() {
+        String fileName = super.request.getFileName();
+        if (fileName == null) {
+            fileName = getFileNameFromCD(conn.getHeaderField("Content-Disposition"));
+            if (fileName == null) {
+                fileName = getFileNameFromPath(super.request.getPath());
+                if (fileName == null) {
+                    fileName = MD5.md5Encode(super.request.getUrlString());
+                }
+            }
+        }
+        return fileName;
     }
 
     private String getFileNameFromCD(String cd) {
@@ -164,33 +254,5 @@ public class HttpFileGetTask extends HttpTask {
         }
 
         return null;
-    }
-
-    private String getUrlMD5(String url) {
-        if (url == null || url.equals(""))
-            return null;
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(url.getBytes());
-            byte[] res = md.digest();
-            return byte2hex(res);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static String byte2hex(byte[] data) {
-        StringBuilder sb = new StringBuilder();
-
-        for (byte b : data) {
-            int high = (b >> 4) & 0x0F;
-            int low = b & 0x0F;
-
-            sb.append(Integer.toHexString(high));
-            sb.append(Integer.toHexString(low));
-        }
-
-        return sb.toString();
     }
 }

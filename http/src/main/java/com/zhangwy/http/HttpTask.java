@@ -1,13 +1,16 @@
 package com.zhangwy.http;
 
 import java.net.HttpURLConnection;
+import java.util.concurrent.Future;
 
 
 public abstract class HttpTask implements Runnable {
-    protected final int READ_TIMEOUT = 20000; //20s
+    protected final int READ_TIMEOUT = 10000; //10s
     protected final int SIZE_READ_BUFFER = 16*1024;
-    protected final int CONNECT_TIMEOUT = 15000; //15s
+    protected final int CONNECT_TIMEOUT = 10000; //10s
     protected int maxRetryCount = 1;
+    private   boolean stop = false;
+    protected Future<?> future;
 
     protected HttpRequest request = null;
     protected HttpResponse response = null;
@@ -53,11 +56,17 @@ public abstract class HttpTask implements Runnable {
         this.handler = handler;
     }
 
+    public void setFuture(Future<?> future) {
+        this.future = future;
+    }
+
     protected abstract void request() throws HttpException;
 
     private void query() throws Throwable {
         boolean success = false;
         while (this.maxRetryCount-- > 0 && !success) {
+            if (isStop())
+                break;
             try {
                 if (this.handler != null)
                     this.handler.onStart(this.request);
@@ -84,6 +93,10 @@ public abstract class HttpTask implements Runnable {
         if (this.handler == null) {
             return;
         }
+        if (this.stop) {
+            this.handler.onStop(request);
+            return;
+        }
 
         if (this.response == null) {
             throw new HttpException("null response");
@@ -106,6 +119,10 @@ public abstract class HttpTask implements Runnable {
             if (this.handler != null)
                 this.handler.onError(this.request, e.getMessage());
         }
+    }
+
+    protected final boolean isStop() {
+        return stop || (stop = (future != null && future.isCancelled()));
     }
 
     public String getUserAgent() {
