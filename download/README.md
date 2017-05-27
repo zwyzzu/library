@@ -33,7 +33,7 @@
     2.有界面：仅支持下载apk，下载完成会自动调起安装，网络变换提示等
     DownloadApp.newInstance(context).setListener(downloadListener).download(url, title, iconUrl, md5, size);
 ### 3.3：下载器API接口描述
-1. com.yixia.download.Downloader<br />
+1. com.zhangwy.download.Downloader<br />
 下载类型Media、Image、apk、other；支持多任务多线程下载，下载任务记入数据库，下载状态通知及校验文件，支持删除、暂停、重新开始下载
 <table bgcolor="#aaa" border="0" cellpadding="5" cellspacing="1">
     <tr bgcolor="#ddd">
@@ -86,7 +86,7 @@
     </tr>
 </table>
 
-2. com.yixia.download.Downloader.DownloadListener<br />
+2. com.zhangwy.download.Downloader.DownloadListener<br />
 下载监听接口
 <table bgcolor="#aaa" border="0" cellpadding="5" cellspacing="1">
     <tr bgcolor="#ddd">
@@ -120,7 +120,7 @@
 </table>
 
 3. 带界面下载器API接口描述<br />
-com.yixia.download.DownloadApp<br />
+com.zhangwy.download.DownloadApp<br />
 应用下载。仅支持下载apk，下载完成会自动调起安装，网络变换提示等，一个DownloadApp仅支持下载一个任务，多个任务需要创建多个DownloadApp实体。
 <table bgcolor="#aaa" border="0" cellpadding="5" cellspacing="1">
     <tr bgcolor="#ddd">
