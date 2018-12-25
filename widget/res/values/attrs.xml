@@ -2,7 +2,22 @@
 <resources>
 
     <declare-styleable name="GifView">
-        <attr name="auto_play" format="boolean"/>
+        <attr name="auto_play" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="PowerView">
+        <attr name="show_percent" format="boolean" />
+        <attr name="percent_textSize" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="WImageView">
+        <attr name="roundAsCircle" format="boolean" />
+        <attr name="borderColor" format="color" />
+        <attr name="borderWidth" format="dimension" />
+        <attr name="checked" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="FlowLayout">
+        <attr name="horizontalSpacing" format="dimension" />
+        <attr name="verticalSpacing" format="dimension" />
+        <attr name="maxLines" format="integer" />
+    </declare-styleable>
 </resources>

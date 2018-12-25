@@ -10,8 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.zhangwy.util.Util;
-
 /**
  * Created by 张维亚(zhangwy) on 2016/12/15 上午9:39.
  * Updated by zhangwy on 2016/12/15 上午9:39.
@@ -19,13 +17,14 @@ import com.zhangwy.util.Util;
  */
 public class RecyclerDivider extends RecyclerView.ItemDecoration {
 
-    public static RecyclerDivider create(Context ctx, int orientation, int... color){
-        RecyclerDivider divider = new RecyclerDivider(ctx, orientation);
-        if (Util.isEmpty(color)){
-            divider.setColor(color[0]);
-        }
-        return divider;
+    public static RecyclerDivider create(Context ctx, int orientation, int size, int color){
+        return new RecyclerDivider(ctx, orientation, size, color);
     }
+
+    public static RecyclerDivider create(Context ctx, int orientation){
+        return new RecyclerDivider(ctx, orientation);
+    }
+
     /**
      * RecyclerView的布局方向，默认先赋值为纵向布局
      * 横向和纵向对应的分割想画法不一样
@@ -43,7 +42,20 @@ public class RecyclerDivider extends RecyclerView.ItemDecoration {
      */
     private Paint mPaint;
 
+    /**
+     * @param context 上下文
+     * @param orientation
+     * @param size
+     * @param color
+     */
+    public RecyclerDivider(Context context, int orientation, int size, int color) {
+        this(context, orientation);
+        this.setColor(color);
+        this.mItemSize = (int) TypedValue.applyDimension(size, TypedValue.COMPLEX_UNIT_DIP, context.getResources().getDisplayMetrics());
+    }
+
     public RecyclerDivider(Context context, int orientation) {
+        super();
         this.mOrientation = orientation;
         if (orientation != LinearLayoutManager.VERTICAL && orientation != LinearLayoutManager.HORIZONTAL) {
             throw new IllegalArgumentException("请传入正确的参数");

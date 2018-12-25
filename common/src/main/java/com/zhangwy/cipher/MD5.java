@@ -1,10 +1,15 @@
 package com.zhangwy.cipher;
 
+import android.text.TextUtils;
+
+import com.zhangwy.util.FileUtil;
 import com.zhangwy.util.Logger;
+import com.zhangwy.util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
 
 /**
  * Author: zhangwy(张维亚)
@@ -16,7 +21,7 @@ import java.io.IOException;
  * md5EncodeFile(String file)对文件进行加密
  * md5EncodeFile(File file)对文件进行加密
  */
-
+@SuppressWarnings("unused")
 public class MD5 {
 
     /**
@@ -28,6 +33,10 @@ public class MD5 {
      */
     public static String md5EncodeFile(String file) {
         return md5EncodeFile(new File(file));
+    }
+
+    public static String md52EncodeFile(String file) {
+        return new MD5Impl2(file, true).hexString();
     }
 
     /**
@@ -77,6 +86,10 @@ public class MD5 {
         return new MD5Impl(src).hexString();
     }
 
+    public static String md52Encode(String src) {
+        return new MD5Impl2(src, false).hexString();
+    }
+
     public static String md5Encode(byte[] src) {
         if (src == null || src.length == 0) {
             return md5Encode("null");
@@ -87,6 +100,87 @@ public class MD5 {
     /***************************************************************************************
      * md5 类实现了RSA Data Security, Inc.在提交给IETF 的RFC1321中的MD5 message-digest 算法  *
      ***************************************************************************************/
+    private static class MD5Impl2{
+        final char[] digestValues = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        private byte[] digest;
+
+        private MD5Impl2(byte[] bytes) {
+            this.encode(bytes);
+        }
+
+        private MD5Impl2(String string, boolean file) {
+            if (TextUtils.isEmpty(string)) {
+                return;
+            }
+            if (file) {
+                this.encode(new File(string));
+            } else {
+                this.encode(string.getBytes());
+            }
+        }
+
+        private MD5Impl2(File file) {
+            this.encode(file);
+        }
+
+        private void encode(byte[] bytes) {
+            if (Util.isEmpty(bytes)) {
+                return;
+            }
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                this.digest = md5.digest(bytes);
+            } catch (Throwable throwable) {
+                Logger.d("encode", throwable);
+            }
+        }
+
+        private void encode(File file) {
+            if (!FileUtil.fileExists(file)) {
+                return;
+            }
+            FileInputStream inputStream = null;
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                byte buffer[] = new byte[1024];
+                int len;
+                inputStream = new FileInputStream(file);
+                while ((len = inputStream.read(buffer)) != -1) {
+                    md5.update(buffer, 0, len);
+                }
+                this.digest = md5.digest();
+            } catch (Throwable throwable) {
+                Logger.d("encode", throwable);
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (Exception e) {
+                        Logger.d("close.InputStream", e);
+                    }
+                }
+            }
+        }
+
+        String hexString() {
+            if (Util.isEmpty(this.digest)) {
+                return "";
+            }
+
+            StringBuilder builder = new StringBuilder();
+            for (byte b : this.digest) {
+                builder.append(byteHEX(b));
+            }
+            return builder.toString();
+        }
+
+        private String byteHEX(byte ib) {
+            char[] ob = new char[2];
+            ob[0] = digestValues[(ib >>> 4) & 0X0F];
+            ob[1] = digestValues[ib & 0X0F];
+            return new String(ob);
+        }
+    }
     private static class MD5Impl {
         /**
          * 下面这些S11-S44实际上是一个4*4的矩阵，在原始的C实现中是用#define实现的，

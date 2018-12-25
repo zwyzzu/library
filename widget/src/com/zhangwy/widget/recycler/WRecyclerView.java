@@ -116,4 +116,8 @@ public class WRecyclerView<T> extends RecyclerView {
     public int getCount() {
         return adapter == null ? 0 : adapter.getItemCount();
     }
+
+    public final void notifyItemMoved(int fromPosition, int toPosition) {
+        adapter.notifyItemMoved(fromPosition, toPosition);
+    }
 }
