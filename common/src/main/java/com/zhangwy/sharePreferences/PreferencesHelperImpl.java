@@ -150,7 +150,7 @@ class PreferencesHelperImpl extends PreferencesHelper {
 
     @Override
     public void applyFloat(String key, float value) {
-
+        preferences.edit().putFloat(key, value).apply();
     }
 
     @Override

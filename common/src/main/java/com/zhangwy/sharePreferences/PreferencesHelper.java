@@ -17,10 +17,10 @@ import java.util.List;
  * 2. apply是将修改数据原子提交到内存, 而后异步真正提交到硬件磁盘, 而commit是同步的提交到硬件磁盘。
  * 3. apply方法不会提示任何失败的提示, 如果对提交的结果不关心的话，建议使用apply，需要确保提交成功且有后续操作的话，还是需要用commit的。
  */
-
+@SuppressWarnings("unused")
 public abstract class PreferencesHelper {
 
-    private static final String DEFAULT_NAME = "yixia_ad_preferences";
+    private static final String DEFAULT_NAME = "default_preferences";
     private static HashMap<String, PreferencesHelper> helpers = new HashMap<>();
 
     public static PreferencesHelper newInstance(String name) {

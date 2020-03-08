@@ -10,10 +10,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import com.zhangwy.cipher.MD5;
@@ -180,6 +182,9 @@ public class Device {
 
     public final static class OS {
 
+        public static boolean miUIRom() {
+            return Build.MANUFACTURER.equalsIgnoreCase("xiaomi");
+        }
         /**
          * 获取手机型号
          */
@@ -223,6 +228,18 @@ public class Device {
     }
 
     public final static class App {
+
+        public static String getAppName(Context context) {
+            try {
+                PackageManager manager = context.getPackageManager();
+                PackageInfo info = manager.getPackageInfo(getPackageName(context), 0);
+                return info == null ? "" : info.applicationInfo.loadLabel(manager).toString();
+            } catch (Exception e) {
+                Log.d(TAG, "getAppName", e);
+                return "";
+            }
+        }
+
         public static String getVersionName(Context context) {
             try {
                 PackageInfo info = getPackageInfo(context);
@@ -245,6 +262,10 @@ public class Device {
 
         private static PackageInfo getPackageInfo(Context context) throws PackageManager.NameNotFoundException {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        }
+
+        public static String getPackageName(Context context) {
+            return context == null ? "" : context.getPackageName();
         }
     }
 

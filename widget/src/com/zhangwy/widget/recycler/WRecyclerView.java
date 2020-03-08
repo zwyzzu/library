@@ -18,6 +18,7 @@ import java.util.List;
  * Updated by zhangwy on 2016/12/13 上午11:09.
  * Description 筛选布局
  */
+@SuppressWarnings("unused")
 public class WRecyclerView<T> extends RecyclerView {
     public static final int HORIZONTAL = OrientationHelper.HORIZONTAL;
     public static final int VERTICAL = OrientationHelper.VERTICAL;

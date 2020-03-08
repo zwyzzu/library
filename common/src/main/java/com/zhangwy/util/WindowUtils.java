@@ -19,6 +19,7 @@ import com.zhangwy.R;
  * Updated by zhangwy on 2016/12/24 下午2:29.
  * Description 创建各种类型的dialog
  */
+@SuppressWarnings("unused")
 public class WindowUtils {
 
     public static Dialog createAlertDialog(Context ctx, int titleId, String[] array, int index, OnClickListener onSelect, OnClickListener onCancelClick) {
@@ -26,9 +27,11 @@ public class WindowUtils {
     }
 
     public static Dialog createAlertDialog(Context ctx, String title, String[] array, int index, OnClickListener onSelect, OnClickListener onCancelClick) {
-        return new AlertDialog.Builder(ctx)
-                .setTitle(title)
-                .setSingleChoiceItems(array, index, onSelect)
+        AlertDialog.Builder builder = createAlertDialogBuilder(ctx, title);
+        if (builder == null) {
+            return null;
+        }
+        return builder.setSingleChoiceItems(array, index, onSelect)
                 .setNegativeButton(R.string.common_cancel, onCancelClick).create();
     }
 
@@ -83,6 +86,22 @@ public class WindowUtils {
         return createAlertDialog(ctx, titleId, view, onOKClick, R.string.common_ok, onCancelClick, R.string.common_cancel);
     }
 
+    public static Dialog createAlertDialog(Context ctx, String title, String message, String onOKText, OnClickListener onOKClick,
+                                           String onCancelText, OnClickListener onCancelClick) {
+        try {
+            AlertDialog.Builder builder = createAlertDialogBuilder(ctx, title);
+            if (builder == null) {
+                return null;
+            }
+            return builder.setMessage(message)
+                    .setPositiveButton(onOKText, onOKClick)
+                    .setNegativeButton(onCancelText, onCancelClick)
+                    .create();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static Dialog createAlertDialog(Context ctx, int titleId, View view, OnClickListener onOKClick, int okId, OnClickListener onCancelClick, int cancelId) {
         return new AlertDialog.Builder(ctx)
                 .setView(view)
@@ -91,6 +110,18 @@ public class WindowUtils {
                 .setPositiveButton(okId == 0 ? R.string.common_ok : okId, onOKClick)
                 .setNegativeButton(cancelId == 0 ? R.string.common_cancel : cancelId, onCancelClick)
                 .create();
+    }
+
+    private static AlertDialog.Builder createAlertDialogBuilder(Context context, String title) {
+        try {
+            if (TextUtils.isEmpty(title)) {
+                return new AlertDialog.Builder(context);
+            } else {
+                return new AlertDialog.Builder(context).setTitle(title);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static Dialog createListDialog(Activity ctx, int dialogId, String title, String[] list, OnClickListener onListClick, OnClickListener onCancelClick, String cancelText) {
