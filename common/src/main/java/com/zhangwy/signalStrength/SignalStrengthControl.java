@@ -23,7 +23,7 @@ public class SignalStrengthControl {
     }
 
     private static class SignalStrengthHolder {
-        public static SignalStrengthControl INSTANCE = new SignalStrengthControl();
+        static SignalStrengthControl INSTANCE = new SignalStrengthControl();
     }
 
     private WifiManager mWifiManager;
@@ -143,13 +143,13 @@ public class SignalStrengthControl {
     }
 
     private static int getMethod(Object instance, String fieldName) {
-        try {
-            Method method = instance.getClass().getDeclaredMethod(fieldName, null);
-            method.setAccessible(true);
-            return (int) method.invoke(instance, null);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Method method = instance.getClass().getDeclaredMethod(fieldName, null);
+//            method.setAccessible(true);
+//            return (int) method.invoke(instance, null);
+//        } catch (Throwable e) {
+//            e.printStackTrace();
+//        }
         return 0;
     }
 

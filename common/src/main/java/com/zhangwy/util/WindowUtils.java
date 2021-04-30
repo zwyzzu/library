@@ -15,113 +15,134 @@ import android.view.View;
 import com.zhangwy.R;
 
 /**
- * Created by 张维亚(zhangwy) on 2016/12/24 下午2:29.
- * Updated by zhangwy on 2016/12/24 下午2:29.
- * Description 创建各种类型的dialog
+ * CreateTime 2016/12/24 14:29.
+ * UpdateTime 2021/4/30 15:56.
+ * Author zhangwy
+ * desc:
+ * 创建各种类型的dialog
+ * -------------------------------------------------------------------------------------------------
+ * use:
+ * TODO
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess", "deprecation"})
 public class WindowUtils {
 
-    public static Dialog createAlertDialog(Context ctx, int titleId, String[] array, int index, OnClickListener onSelect, OnClickListener onCancelClick) {
-        return createAlertDialog(ctx, ctx.getString(titleId), array, index, onSelect, onCancelClick);
+    public static Dialog createAlertDialog(Context ctx, int titleId, String[] array, int index, OnClickListener onSelect, OnClickListener cancelClick) {
+        return createAlertDialog(ctx, ctx.getString(titleId), array, index, onSelect, cancelClick);
     }
 
-    public static Dialog createAlertDialog(Context ctx, String title, String[] array, int index, OnClickListener onSelect, OnClickListener onCancelClick) {
-        AlertDialog.Builder builder = createAlertDialogBuilder(ctx, title);
-        if (builder == null) {
-            return null;
+    public static Dialog createAlertDialog(Context ctx, String title, String[] array, int index, OnClickListener onSelect, OnClickListener cancel) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, title, 0, null, R.string.common_cancel, cancel);
+        if (!Util.isEmpty(array) && onSelect != null) {
+            builder.setSingleChoiceItems(array, index, onSelect);
         }
-        return builder.setSingleChoiceItems(array, index, onSelect)
-                .setNegativeButton(R.string.common_cancel, onCancelClick).create();
+        return builder.create();
     }
 
-    public static Dialog createAlertDialog(Context ctx, int titleId, View view, String[] array, boolean[] flags, OnMultiChoiceClickListener onSelect, OnClickListener onOKClick, OnClickListener onCancelClick) {
-        return new AlertDialog.Builder(ctx)
-                .setView(view)
-                .setTitle(ctx.getString(titleId))
-                .setMultiChoiceItems(array, flags, onSelect)
-                .setPositiveButton(R.string.common_ok, onOKClick)
-                .setNegativeButton(R.string.common_cancel, onCancelClick).create();
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener onOkClick, int okId, OnClickListener onCancelClick, int cancelId) {
-        return createAlertDialog(ctx, titleId, message, onOkClick, ctx.getString(okId), onCancelClick, ctx.getString(cancelId));
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener onOkClick, String okText, OnClickListener onCancelClick, String cancelText) {
-        return new AlertDialog.Builder(ctx)
-                .setIcon(R.drawable.common_alert_dialog_icon)
-                .setTitle(titleId)
-                .setMessage(message)
-                .setPositiveButton(okText, onOkClick)
-                .setNegativeButton(cancelText, onCancelClick).create();
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener onOKClick) {
-        return createAlertDialog(ctx, titleId, message, onOKClick, true);
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener onOKClick, boolean isOk) {
-        return new AlertDialog.Builder(ctx)
-                .setIcon(R.drawable.common_alert_dialog_icon)
-                .setTitle(ctx.getString(titleId))
-                .setMessage(message)
-                .setPositiveButton(isOk ? R.string.common_ok : R.string.common_close, onOKClick)
-                .create();
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, boolean showIcon, OnClickListener onCloseClick) {
-        AlertDialog dialog = new AlertDialog.Builder(ctx)
-                .setTitle(titleId)
-                .setMessage(message)
-                .setPositiveButton(R.string.common_close, onCloseClick)
-                .create();
-        if (showIcon) {
-            dialog.setIcon(R.drawable.common_alert_dialog_icon);
+    public static Dialog createAlertDialog(Context ctx, int titleId, View view, String[] array, boolean[] flags, OnMultiChoiceClickListener select, OnClickListener oKClick, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, titleId, R.string.common_ok, oKClick, R.string.common_cancel, cancelClick);
+        if (view != null) {
+            builder.setView(view);
         }
-        return dialog;
+        if (!Util.isEmpty(array) && select != null) {
+            builder.setMultiChoiceItems(array, flags, select).create();
+        }
+        return builder.create();
+    }
+
+    public static Dialog createAlertDialog(Context context, View view) {
+        return createAlertDialog(context, 0, view);
+    }
+
+    public static Dialog createAlertDialog(Context context, int titleId, View view) {
+        return createAlertDialog(context, titleId, view, null, null);
+    }
+
+    public static Dialog createAlertDialog(Context ctx, View view, OnClickListener onOKClick, OnClickListener onCancelClick) {
+        return createAlertDialog(ctx, 0, view, R.string.common_ok, onOKClick, R.string.common_cancel, onCancelClick);
     }
 
     public static Dialog createAlertDialog(Context ctx, int titleId, View view, OnClickListener onOKClick, OnClickListener onCancelClick) {
-        return createAlertDialog(ctx, titleId, view, onOKClick, R.string.common_ok, onCancelClick, R.string.common_cancel);
+        return createAlertDialog(ctx, titleId, view, R.string.common_ok, onOKClick, R.string.common_cancel, onCancelClick);
     }
 
-    public static Dialog createAlertDialog(Context ctx, String title, String message, String onOKText, OnClickListener onOKClick,
-                                           String onCancelText, OnClickListener onCancelClick) {
-        try {
-            AlertDialog.Builder builder = createAlertDialogBuilder(ctx, title);
-            if (builder == null) {
-                return null;
-            }
-            return builder.setMessage(message)
-                    .setPositiveButton(onOKText, onOKClick)
-                    .setNegativeButton(onCancelText, onCancelClick)
-                    .create();
-        } catch (Exception e) {
-            return null;
+    public static Dialog createAlertDialog(Context ctx, int titleId, View view, int ok, OnClickListener oKClick, int cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, titleId, ok, oKClick, cancel, cancelClick);
+        if (view != null) {
+            builder.setView(view);
         }
+        return builder.create();
     }
 
-    public static Dialog createAlertDialog(Context ctx, int titleId, View view, OnClickListener onOKClick, int okId, OnClickListener onCancelClick, int cancelId) {
-        return new AlertDialog.Builder(ctx)
-                .setView(view)
-                .setIcon(R.drawable.common_alert_dialog_icon)
-                .setTitle(ctx.getString(titleId))
-                .setPositiveButton(okId == 0 ? R.string.common_ok : okId, onOKClick)
-                .setNegativeButton(cancelId == 0 ? R.string.common_cancel : cancelId, onCancelClick)
-                .create();
-    }
-
-    private static AlertDialog.Builder createAlertDialogBuilder(Context context, String title) {
-        try {
-            if (TextUtils.isEmpty(title)) {
-                return new AlertDialog.Builder(context);
-            } else {
-                return new AlertDialog.Builder(context).setTitle(title);
-            }
-        } catch (Exception e) {
-            return null;
+    public static Dialog createAlertDialog(Context context, int titleId, View view, String ok, OnClickListener oKClick, String cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(context, titleId, ok, oKClick, cancel, cancelClick);
+        if (view != null) {
+            builder.setView(view);
         }
+        return builder.create();
+    }
+
+    public static Dialog createAlertDialog(Context ctx, int titleId, String message, boolean showIcon, OnClickListener close) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, titleId, R.string.common_close, close, 0, null);
+        builder.setMessage(message);
+        if (showIcon) {
+            builder.setIcon(R.drawable.common_alert_dialog_icon);
+        }
+        return builder.create();
+    }
+
+    public static Dialog createAlertDialog(Context ctx, String title, String message, String ok, OnClickListener oKClick, String cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, title, ok, oKClick, cancel, cancelClick);
+        return builder.setMessage(message).create();
+    }
+
+    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener oKClick) {
+        return createAlertDialog(ctx, titleId, message, oKClick, true);
+    }
+
+    public static Dialog createAlertDialog(Context ctx, int titleId, String message, OnClickListener onClick, boolean isOk) {
+        return createAlertDialog(ctx, titleId, message, isOk ? R.string.common_ok : R.string.common_close, onClick, 0, null);
+    }
+
+    public static Dialog createAlertDialog(Context ctx, int titleId, String message, int ok, OnClickListener okClick, int cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, titleId, ok, okClick, cancel, cancelClick);
+        return builder.setMessage(message).create();
+    }
+
+    public static Dialog createAlertDialog(Context ctx, int titleId, String message, String ok, OnClickListener okClick, String cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(ctx, titleId, ok, okClick, cancel, cancelClick);
+        return builder.setMessage(message).create();
+    }
+
+    public static AlertDialog.Builder createAlertBuilder(Context context, int titleId, int ok, final OnClickListener okClick, int cancel, OnClickListener cancelClick) {
+        return createAlertBuilder(context, titleId, StringUtil.getString(context, ok), okClick, StringUtil.getString(context, cancel), cancelClick);
+    }
+
+    public static AlertDialog.Builder createAlertBuilder(Context context, int titleId, String ok, final OnClickListener okClick, String cancel, OnClickListener cancelClick) {
+        return createAlertBuilder(context, StringUtil.getString(context, titleId), ok, okClick, cancel, cancelClick);
+    }
+
+    public static AlertDialog.Builder createAlertBuilder(Context context, String title, int ok, final OnClickListener okClick, int cancel, OnClickListener cancelClick) {
+        return createAlertBuilder(context, title, StringUtil.getString(context, ok), okClick, StringUtil.getString(context, cancel), cancelClick);
+    }
+
+    public static AlertDialog.Builder createAlertBuilder(Context context, String title, String ok, final OnClickListener okClick, String cancel, OnClickListener cancelClick) {
+        AlertDialog.Builder builder = createAlertBuilder(context, title);
+        if (okClick != null) {
+            builder.setPositiveButton((StringUtil.isEmpty(ok) ? StringUtil.getString(context, R.string.common_ok) : ok), okClick);
+        }
+        if (cancelClick != null) {
+            builder.setNegativeButton((StringUtil.isEmpty(cancel) ? StringUtil.getString(context, R.string.common_cancel) : cancel), cancelClick);
+        }
+        return builder;
+    }
+
+    public static AlertDialog.Builder createAlertBuilder(Context context, String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        if (!StringUtil.isEmpty(title)) {
+            builder.setTitle(title);
+        }
+        return builder;
     }
 
     public static Dialog createListDialog(Activity ctx, int dialogId, String title, String[] list, OnClickListener onListClick, OnClickListener onCancelClick, String cancelText) {
@@ -161,9 +182,7 @@ public class WindowUtils {
         return createProgressDialog(ctx, titleId, message, onCancelClick, ctx.getString(buttonText), indeterminate);
     }
 
-    public static ProgressDialog createProgressDialog(Context ctx, int titleId, String message,
-                                                      OnClickListener onCancelClick, String cancelText,
-                                                      boolean indeterminate) {
+    public static ProgressDialog createProgressDialog(Context ctx, int titleId, String message, OnClickListener onCancelClick, String cancelText, boolean indeterminate) {
         ProgressDialog dialog = new ProgressDialog(ctx);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setMessage(message);
@@ -192,21 +211,6 @@ public class WindowUtils {
             return false;
         }
 
-    }
-
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, int onOkId, OnClickListener onOKClick, int onCancelId, OnClickListener onCancelClick) {
-        return createAlertDialog(ctx, titleId, message, ctx.getString(onOkId), onOKClick, ctx.getString(onCancelId), onCancelClick);
-    }
-
-    public static Dialog createAlertDialog(Context ctx, int titleId, String message, String onOKText, OnClickListener onOKClick, String onCancelText, OnClickListener onCancelClick) {
-        return new AlertDialog.Builder(ctx)
-                .setIcon(R.drawable.common_alert_dialog_icon)
-                .setTitle(ctx.getString(titleId))
-                .setMessage(message)
-                .setPositiveButton(onOKText, onOKClick)
-                .setNegativeButton(onCancelText, onCancelClick)
-                .create();
     }
 
     public static Dialog createSimpleTipAlertDialog(Context ctx, int titleId, String message) {

@@ -31,6 +31,7 @@ import android.text.TextUtils;
  * 修改时间：2014年6月10日 下午3:38:35 
  * Description:资源相关操作的工具类
  **/
+@SuppressWarnings({"WeakerAccess", "JavaDoc", "CatchMayIgnoreException", "BooleanMethodIsAlwaysInverted", "IndexOfReplaceableByContains", "unused", "ConstantConditions", "ToArrayCallWithZeroLengthArrayArgument"})
 public class ResourcesUtil {
 
 	public static int findId(String packageName, String name) {
@@ -67,8 +68,8 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID，如果未找到返回-1；
 	 */
-	public static int findResourse(Class<?> clazz, String rule, String... more) {
-		return findResourse(clazz.getDeclaredFields(), rule, more);
+	public static int findResource(Class<?> clazz, String rule, String... more) {
+		return findResource(clazz.getDeclaredFields(), rule, more);
 	}
 
 	/**
@@ -78,7 +79,7 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID，如果未找到返回-1；
 	 */
-	public static int findResourse(Field[] fields, String rule, String... more) {
+	public static int findResource(Field[] fields, String rule, String... more) {
 		for (Field field : fields) {
 			String name = field.getName().toLowerCase(Locale.getDefault());
 
@@ -100,8 +101,8 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static ArrayList<Integer> findResourseList(Class<?> clazz, String rule, String... more){
-		return findResourseList(clazz.getDeclaredFields(), rule, more);
+	public static ArrayList<Integer> findResourceList(Class<?> clazz, String rule, String... more){
+		return findResourceList(clazz.getDeclaredFields(), rule, more);
 	}
 
 	/**
@@ -111,15 +112,15 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static ArrayList<Integer> findResourseList(Field[] fields, String rule, String... more){
+	public static ArrayList<Integer> findResourceList(Field[] fields, String rule, String... more){
 
-		HashMap<String, Integer> map = findResourseMap(fields, rule, more);
+		HashMap<String, Integer> map = findResourceMap(fields, rule, more);
 		if (map == null || map.size() <= 0)
-			return new ArrayList<Integer>(0);
+			return new ArrayList<>(0);
 
-		TreeMap<String, Integer> tree = new TreeMap<String, Integer>(map);
+		TreeMap<String, Integer> tree = new TreeMap<>(map);
 		Collection<Integer> collection = tree.values();
-		ArrayList<Integer> list = new ArrayList<Integer>(collection.size());
+		ArrayList<Integer> list = new ArrayList<>(collection.size());
 		list.addAll(collection);
 		return list;
 	}
@@ -131,8 +132,8 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static Integer[] findResourseArray(Class<?> clazz, String rule, String... more){
-		return findResourseArray(clazz.getDeclaredFields(), rule, more);
+	public static Integer[] findResourceArray(Class<?> clazz, String rule, String... more){
+		return findResourceArray(clazz.getDeclaredFields(), rule, more);
 	}
 
 	/**
@@ -142,12 +143,12 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static Integer[] findResourseArray(Field[] fields, String rule, String... more){
-		HashMap<String, Integer> map = findResourseMap(fields, rule, more);
+	public static Integer[] findResourceArray(Field[] fields, String rule, String... more){
+		HashMap<String, Integer> map = findResourceMap(fields, rule, more);
 		if (map == null || map.size() <= 0)
 			return new Integer[0];
 		
-		TreeMap<String, Integer> tree = new TreeMap<String, Integer>(map);
+		TreeMap<String, Integer> tree = new TreeMap<>(map);
 		Collection<Integer> collection = tree.values();
 		return collection.toArray(new Integer[collection.size()]);
 	}
@@ -159,8 +160,8 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static HashMap<String, Integer> findResourseMap(Class<?> clazz, String rule, String... more){
-		return findResourseMap(clazz.getDeclaredFields(), rule, more);
+	public static HashMap<String, Integer> findResourceMap(Class<?> clazz, String rule, String... more){
+		return findResourceMap(clazz.getDeclaredFields(), rule, more);
 	}
 
 	/**
@@ -170,8 +171,8 @@ public class ResourcesUtil {
 	 * @param more 更多的判断关键字
 	 * @return 返回在查到的ID列表，如果未找到返回空的map；
 	 */
-	public static HashMap<String, Integer> findResourseMap(Field[] fields, String rule, String... more) {
-		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> findResourceMap(Field[] fields, String rule, String... more) {
+		HashMap<String, Integer> hashMap = new HashMap<>();
 		for (Field field : fields) {
 			String name = field.getName().toLowerCase(Locale.getDefault());
 

@@ -33,6 +33,7 @@ import java.util.Map;
  * Description:
  */
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Util {
 
 
@@ -46,8 +47,7 @@ public class Util {
      */
     public static String[] string2Array(String text, String splitter) {
         ArrayList<String> arr = string2ArrayList(text, splitter);
-
-        return arr.toArray(new String[arr.size()]);
+        return arr.toArray(new String[0]);
     }
 
     public static HashSet<String> string2HashSet(String text, String splitter) {
@@ -136,27 +136,20 @@ public class Util {
         if (isEmpty(arr))
             return "";
 
-        String value = "";
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < arr.size(); i++) {
             if (i > 0) {
-                value += splitter;
+                builder.append(splitter);
             }
-
-            value += arr.get(i).toString();
+            builder.append(arr.get(i).toString());
         }
-        return value;
+        return builder.toString();
     }
 
     public static <E> HashSet<E> array2HashSet(ArrayList<E> arr) {
         if (isEmpty(arr))
             return new HashSet<>(0);
-
-        HashSet<E> ret = new HashSet<>(arr.size());
-        for (E elem : arr) {
-            ret.add(elem);
-        }
-
-        return ret;
+        return new HashSet<>(arr);
     }
 
     public static String hashSet2String(HashSet<String> set, char ch) {
@@ -167,13 +160,7 @@ public class Util {
     public static <E> ArrayList<E> hashSet2Array(HashSet<E> set) {
         if (isEmpty(set))
             return new ArrayList<>(0);
-
-        ArrayList<E> ret = new ArrayList<>(set.size());
-        for (E elem : set) {
-            ret.add(elem);
-        }
-
-        return ret;
+        return new ArrayList<>(set);
     }
 
     /**
@@ -198,7 +185,6 @@ public class Util {
         return map;
     }
 
-    @SuppressWarnings("rawtypes")
     public static <K, V> String mapValue2String(HashMap<K, V> map, char ch) {
         if (isEmpty(map)) {
             return "";
@@ -207,7 +193,7 @@ public class Util {
         StringBuilder str = new StringBuilder();
         Collection<V> collection = map.values();
         for (Iterator it = collection.iterator(); it.hasNext(); ) {
-            str.append(String.valueOf(it.next()));
+            str.append(it.next());
             if (it.hasNext()) {
                 str.append(ch);
             }
@@ -240,8 +226,9 @@ public class Util {
         return map == null || map.size() <= 0;
     }
 
-    public static <T> boolean isEmpty(T... obj) {
-        return obj == null || obj.length <= 0;
+    @SafeVarargs
+    public static <T> boolean isEmpty(T... objs) {
+        return objs == null || objs.length <= 0;
     }
 
     /**
@@ -308,24 +295,24 @@ public class Util {
         if (TextUtils.isEmpty(text))
             text = "";
 
-        String reg = "\\" + Character.toString(splitter);
+        String reg = String.format("\\%s", Character.toString(splitter));
         return text.split(reg);
     }
 
     public static String array2Strings(char splitter, Object... objs) {
-        String value = "";
-        if (isEmpty(objs))
-            return value;
+        StringBuilder builder = new StringBuilder();
+        if (isEmpty(objs)) {
+            return builder.toString();
+        }
 
-        int length = objs.length;
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < objs.length; i++) {
             if (i > 0) {
-                value += splitter;
+                builder.append(splitter);
             }
 
-            value += objs[i].toString();
+            builder.append(objs[i].toString());
         }
-        return value;
+        return builder.toString();
     }
 
     public static <T> String array2Strings(List<T> array, char splitter) {
@@ -336,25 +323,24 @@ public class Util {
         if (isEmpty(arr))
             return "";
 
-        String value = "";
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < arr.size(); i++) {
             if (i > 0) {
-                value += splitter;
+                builder.append(splitter);
             }
 
-            value += arr.get(i).toString();
+            builder.append(arr.get(i).toString());
         }
-        return value;
+        return builder.toString();
     }
 
     public static String urlEncoder(String params) {
-        String paramsResult = "";
         try {
-            paramsResult = URLEncoder.encode(params, "UTF-8");
+            return URLEncoder.encode(params, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             Logger.e("encoder", e);
         }
-        return paramsResult;
+        return "";
     }
 
     public static void releaseView(View view) {
@@ -386,8 +372,9 @@ public class Util {
         return kb / 1024.0;
     }
 
+    private final static double BYTE_MB = 1024 * 1024;
     public static double byte2Mb(long byteSize) {
-        return byteSize / (1024 * 1024);
+        return byteSize / BYTE_MB;
     }
 
     public static String byte2hex(byte[] bytes) {
@@ -425,18 +412,18 @@ public class Util {
     public static String makeCycleMsg(Object obj, String cycle) {
         if (obj == null)
             return cycle;
-        return (new StringBuffer()).append(obj.getClass().getSimpleName()).append('|').append(cycle).append('|').append(obj.hashCode()).toString();
+        return obj.getClass().getSimpleName() + '|' + cycle + '|' + obj.hashCode();
     }
 
     public static String reverser(String string) {
         if (TextUtils.isEmpty(string))
             return string;
         char[] arrays = string.toCharArray();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         for (int i = arrays.length - 1; i >= 0; i--) {
-            buffer.append(arrays[i]);
+            builder.append(arrays[i]);
         }
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static void installApp(Context context, String filePath) {
